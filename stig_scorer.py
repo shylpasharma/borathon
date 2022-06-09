@@ -4,10 +4,11 @@ import os, sys
 import re
 import csv
 
-cpresult =  sys.argv[-2]
-workerresult =  sys.argv[-1]
-tkc = cpresult.split('--')[0]
+cpresult = sys.argv[-3]
+workerresult = sys.argv[-2]
+csvfile = sys.argv[-1]
 
+tkc = cpresult.split('-cp')[0]
 
 def score_parser(file):
 
@@ -23,7 +24,7 @@ def score_parser(file):
 
 def total_score():
 
-    # Calculates total score of control and worker nodes
+    # Calculates total score of controlplane and worker nodes
 
     totalscore = []
     cpscore = score_parser(cpresult)
@@ -31,13 +32,13 @@ def total_score():
     totalscore = [int(cpscore[i]) + int(workerscore[i]) for i in range(len(cpscore))]
     return totalscore
 
-def write_to_csv(tkc):
+def write_to_csv(csvfile, tkc):
 
     # Calculates Pass percentage and writes data to csv file
 
-    f = open('k8sstigscore.csv', 'w')
+    f = open(csvfile, 'a')
     writer = csv.writer(f)
-
+    
     result = total_score()
     total = (result[0] + result[1] + result[2])
     pass_per = (result[0]/total)*100
@@ -46,13 +47,8 @@ def write_to_csv(tkc):
 
     headers = ["tkc", "score"]
     data = [tkc, int(pass_per)]
-
-    writer.writerow(headers)
+    
     writer.writerow(data)
 
-    #print("Pass: %s" % int(pass_per))
-    #print("Fail: %s" % int(fail_per))
-    #print("Skipped: %s" % int(skip_per))
 
-
-write_to_csv(tkc)
+write_to_csv(csvfile, tkc)
